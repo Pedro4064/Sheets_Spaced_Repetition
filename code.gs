@@ -36,3 +36,15 @@ function parse_config_entries(values, colors){
 
 }
 
+function get_subject_sheets(){
+  
+  const spread_sheet = SpreadsheetApp.getActive(); // The active recall spread sheet file
+  const skip_list = ['Config', 'Overview'];        // List of the names of the sheets that are not subjects
+  
+  // Get all subject sheets
+  let sheets = spread_sheet.getSheets().filter(sheet => !skip_list.includes(sheet.getName()));
+  
+
+  Logger.log(sheets);
+}
+
