@@ -68,7 +68,8 @@ function parse_subject_sheet(subject_sheet){
                       'name': current_entry_values[2],
                       'block': current_entry_values[1],
                       'current state': current_entry_values[3],
-                      'revisions': parse_revisions_cells(current_entry_values, current_entry_color)
+                      'revisions': parse_revisions_cells(current_entry_values, current_entry_color),
+                      'entry cell colors': current_entry_color
                     });
   }
 
@@ -96,24 +97,66 @@ function update_revision_tables(){
 
   // Get all subject sheets and iterate over them
   let subject_sheets = get_subject_sheets();
-  Logger.log(typeof(subject_sheets[0]));
 
   subject_sheets.forEach((subject_sheet) => {
-
-    Logger.log(typeof(subject_sheet));
   
     let [data_range, rev_entries] = parse_subject_sheet(subject_sheet); // Get all information on the sheet
     determine_next_rev_dates(rev_entries);                              // Determine all the next rev dates
     update_rev_data_rage(data_range, rev_entries);                      // Update all the entries on the sheet
-
 
   });
   
 
 }
 
+const deserialize_rev_entries = (rev_entries) => {
+
+  const get_rev_entries = (topic_entry, item) => {
+    let rev_dates = [];
+    
+    topic_entry['revisions'].forEach((rev_entry) => rev_dates.push(rev_entry[item]));
+    return rev_dates;
+  };
+
+  const get_values = (topic_entry) => {
+    // First get all the rev values
+    let rev_values = get_rev_entries(topic_entry, 'value');
+
+    // Now geta all values from the headers
+    let values = [topic_entry['block'], topic_entry['name'], topic_entry['current state']];
+
+    // Concat the two lists into one 
+    return values.concat(rev_values);
+  };
+
+  const get_colors = (topic_entry) => {
+    // First get all the rev values
+    let rev_values = get_rev_entries(topic_entry, 'color').map((color) => color === '#ffffff' ? '' : color);
+
+    // Split the colors to only get the header colors
+    let header_colors = Array(3).fill('');
+
+    return header_colors.concat(rev_values);
+  };
+
+  let values = rev_entries.map( (topic_entry) => get_values(topic_entry));
+  let colors = rev_entries.map( (topic_entry) => get_colors(topic_entry));
+
+  Logger.log(JSON.stringify(values));
+  Logger.log(JSON.stringify(colors));
+
+  return [values, colors];
+};
+
 function update_rev_data_rage(data_range, rev_entries){
 
+  // First and foremost we need to turn the array of objects into a 2D array of values
+  let [values, colors] = deserialize_rev_entries(rev_entries);
+
+  // Set the values and colors to the data range
+  let offset_range = data_range.offset(0, 1, values.length, values[0].length);
+  offset_range.setValues(values);
+  offset_range.setBackgrounds(colors);
 }
 
 function determine_next_rev_dates(topic_entries){
@@ -155,12 +198,12 @@ const was_easy = (rev_entry, configs) =>{
 
 const was_medium = (rev_entry, configs) => {
 
-  return (rev_entry.color == configs['Medium Review']);
+  return (rev_entry.color == configs['Medium Review']['color']);
 };
 
 const was_hard = (rev_entry, configs) => {
 
-  return (rev_entry.color == configs['Hard Review']);
+  return (rev_entry.color == configs['Hard Review']['color']);
 };
 
 const update_topic_entry = (topic_entry, configs,  easy_next_state, medium_next_state, hard_next_state) => {
@@ -202,12 +245,21 @@ const increment_days = (topic_entry, number_of_days) => {
 
 const next_state_base_logic = (topic_entry, next_state, next_state_name, configs) => {
 
+  // Save the total number of topic entries to populate with empty strings after
+  const total_column_number = topic_entry['revisions'].length;
+  
   // Populate the revisions array with the next one after filtering empty values
   topic_entry['revisions'] = topic_entry['revisions'].filter((entry) => entry.value !== '');
   topic_entry['revisions'].push({
                                   'color': '#ffffff',
                                   'value': increment_days(topic_entry, configs[next_state_name]['value'])
                                 });
+
+  // Populate the rest of the columns with empty strings
+  Logger.log(total_column_number - topic_entry['revisions'].length);
+  let empty_array = Array(total_column_number - topic_entry['revisions'].length).fill({'value': '', 'color': ''});
+  topic_entry['revisions'] = topic_entry['revisions'].concat(empty_array);
+
   // Update the state
   topic_entry['current state'] = next_state;
 
