@@ -189,25 +189,42 @@ const update_topic_entry = (topic_entry, configs,  easy_next_state, medium_next_
 };
 
 const increment_days = (topic_entry, number_of_days) => {
+  const MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
   const last_review_session = last_rev(topic_entry);
+  
+  let last_date = new Date(last_review_session.value);
+  let new_date  = new Date(last_date.getTime() + number_of_days * MILLIS_PER_DAY);
+
+  Logger.log(new_date);
+  return new_date;
+
+};
+
+const next_state_base_logic = (topic_entry, next_state, next_state_name, configs) => {
+
+  // Populate the revisions array with the next one after filtering empty values
+  topic_entry['revisions'] = topic_entry['revisions'].filter((entry) => entry.value !== '');
+  topic_entry['revisions'].push({
+                                  'color': '#ffffff',
+                                  'value': increment_days(topic_entry, configs[next_state_name]['value'])
+                                });
+  // Update the state
+  topic_entry['current state'] = next_state;
 
 };
 
 const s0 = (topic_entry, configs) =>{
   
-  const easy_next_state_logic   = (topic_entry) => {
-    topic_entry['current state'] = 'S2';
-    topic_entry['revisions'].push({
-                                    'color': '#ffffff',
-                                    'value': increment_days(topic_entry, configs['Easy Review']['value'])
-                                  });
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S2', 'Estado 2', configs);
   };
   
-  const medium_next_state_logic = (topic_entry) => {
-    topic_entry['current state'] = 'S1';
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
   };
-  const hard_next_state_logic   = (topic_entry) => {
-    topic_entry['current state'] = 'S0';
+
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
   };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
@@ -216,9 +233,17 @@ const s0 = (topic_entry, configs) =>{
 
 const s1 = (topic_entry, configs) =>{
   
-  const easy_next_state_logic   = (topic_entry) => {};
-  const medium_next_state_logic = (topic_entry) => {};
-  const hard_next_state_logic   = (topic_entry) => {};
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S2', 'Estado 2', configs);
+  };
+
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
+  };
+
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
+  };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
 
@@ -226,9 +251,17 @@ const s1 = (topic_entry, configs) =>{
 
 const s2 = (topic_entry, configs) =>{
   
-  const easy_next_state_logic   = (topic_entry) => {};
-  const medium_next_state_logic = (topic_entry) => {};
-  const hard_next_state_logic   = (topic_entry) => {};
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S3', 'Estado 3', configs);
+  };
+
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
+  };
+  
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
+  };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
   
@@ -236,9 +269,17 @@ const s2 = (topic_entry, configs) =>{
 
 const s3 = (topic_entry, configs) =>{
 
-  const easy_next_state_logic   = (topic_entry) => {};
-  const medium_next_state_logic = (topic_entry) => {};
-  const hard_next_state_logic   = (topic_entry) => {};
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S4', 'Estado 4', configs);
+  };
+
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
+  };
+
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
+  };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
 
@@ -246,9 +287,17 @@ const s3 = (topic_entry, configs) =>{
 
 const s4 = (topic_entry, configs) =>{
 
-  const easy_next_state_logic   = (topic_entry) => {};
-  const medium_next_state_logic = (topic_entry) => {};
-  const hard_next_state_logic   = (topic_entry) => {};
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S5', 'Estado 5', configs);
+  };
+
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
+  };
+
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
+  };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
 
@@ -256,9 +305,17 @@ const s4 = (topic_entry, configs) =>{
 
 const s5 = (topic_entry, configs) =>{
 
-  const easy_next_state_logic   = (topic_entry) => {};
-  const medium_next_state_logic = (topic_entry) => {};
-  const hard_next_state_logic   = (topic_entry) => {};
+  const easy_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S5', 'Estado 5', configs);
+  };
+
+  const medium_next_state_logic = () => {
+    next_state_base_logic(topic_entry, 'S1', 'Estado 1', configs);
+  };
+
+  const hard_next_state_logic   = () => {
+    next_state_base_logic(topic_entry, 'S0', 'Estado 0', configs);
+  };
 
   update_topic_entry(topic_entry, configs, easy_next_state_logic, medium_next_state_logic, hard_next_state_logic);
 
