@@ -166,8 +166,14 @@ function determine_next_rev_dates(topic_entries) {
 
   topic_entries.forEach((entry) => {
 
+    // First we need to check if the last_rev is null 
+    let last_revision = last_rev(entry);
+    if (last_revision == undefined) {
+      return;
+    }
+
     // If last review is done, calculate the date of the next
-    if (is_done(last_rev(entry))) {
+    if (is_done(last_revision)) {
 
       next_rev(entry, configs); // Calculate and add the next repetition to the topic entry
 

@@ -147,6 +147,7 @@ function update_subjects_data(todo_data, todo_colors, subject_sheets_dictionary)
 }
 
 function update_todo_data(todo_data, subject_sheets_dictionary) {
+    console.log(subject_sheets_dictionary);
     // First we need to iterate over all subjects sheets and save all topics with un-reviewd last rev entries
     let unreviewed_entries = [];
 
@@ -159,6 +160,12 @@ function update_todo_data(todo_data, subject_sheets_dictionary) {
         for (const topic_entry of subject_topic_entries.slice(1)) {
 
             const last_review_entry = last_rev(topic_entry);
+
+            // Before proceeding, we need to check if it is not undefined, because it is the case when
+            // there are no entries in the subject
+            if (last_review_entry == undefined) {
+                continue;
+            }
             if (!is_done(last_review_entry) && needs_review(last_review_entry.value)) {
                 unreviewed_entries.push(['', subject_name, topic_entry['block'], topic_entry['name'], '']);
             }
